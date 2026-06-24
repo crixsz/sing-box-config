@@ -1,0 +1,90 @@
+{
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "udp",
+        "tag": "dns-local",
+        "server": "223.5.5.5"
+      },
+      {
+        "type": "https",
+        "tag": "dns-proxy",
+        "server": "dns.google.com",
+        "domain_resolver": "dns-local"
+      },
+      {
+        "type": "https",
+        "tag": "dns-direct",
+        "server": "dns.alidns.com",
+        "domain_resolver": "dns-local"
+      }
+    ],
+    "final": "dns-direct"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "address": [
+        "172.19.0.1/30"
+      ],
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "ENTER CF WORKER DOMAIN",
+      "server_port": 80,
+      "uuid": "baeddecc-db89-4ee2-9672-1cdbfd43e6d4",
+      "flow": "",
+      "multiplex": {
+        "enabled": false,
+        "protocol": "smux",
+        "max_streams": 32
+      },
+      "packet_encoding": "xudp",
+      "transport": {
+        "type": "ws",
+        "headers": {
+          "Host": "ENTER CF WORKER DOMAIN"
+        },
+        "path": "/ENTER PATH"
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "default_domain_resolver": "dns-direct",
+    "final": "proxy",
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      }
+    ]
+  }
+}
